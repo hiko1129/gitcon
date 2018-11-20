@@ -10,6 +10,18 @@ import (
 	"github.com/hiko1129/gitcon/gitcon"
 )
 
+var _ = BeforeSuite(func() {
+	httpmock.Activate()
+})
+
+var _ = BeforeEach(func() {
+	httpmock.Reset()
+})
+
+var _ = AfterSuite(func() {
+	httpmock.DeactivateAndReset()
+})
+
 var _ = Describe("Client", func() {
 	dom := `<svg width="563" height="88" class="js-calendar-graph-svg">
   <g transform="translate(16, 20)">
@@ -90,8 +102,8 @@ var _ = Describe("Client", func() {
           <rect class="day" width="8" height="8" x="3" y="10" fill="#239a3b" data-count="26" data-date="2018-01-15"></rect>
           <rect class="day" width="8" height="8" x="3" y="20" fill="#7bc96f" data-count="15" data-date="2018-01-16"></rect>
           <rect class="day" width="8" height="8" x="3" y="30" fill="#ebedf0" data-count="0" data-date="2018-01-17"></rect>
-          <rect class="day" width="8" height="8" x="3" y="40" fill="#c6e48b" data-count="4" data-date="2018-01-18"></rect>
-          <rect class="day" width="8" height="8" x="3" y="50" fill="#7bc96f" data-count="17" data-date="2018-01-19"></rect>
+          <rect class="day" width="8" height="8" x="3" y="40" fill="#c6e48b" data-count="5" data-date="2018-01-18"></rect>
+          <rect class="day" width="8" height="8" x="3" y="50" fill="#7bc96f" data-count="16" data-date="2018-01-19"></rect>
           <rect class="day" width="8" height="8" x="3" y="60" fill="#c6e48b" data-count="3" data-date="2018-01-20"></rect>
       </g>
       <g transform="translate(99, 0)">
@@ -226,8 +238,8 @@ var _ = Describe("Client", func() {
           <rect class="day" width="8" height="8" x="-12" y="20" fill="#ebedf0" data-count="0" data-date="2018-05-01"></rect>
           <rect class="day" width="8" height="8" x="-12" y="30" fill="#ebedf0" data-count="0" data-date="2018-05-02"></rect>
           <rect class="day" width="8" height="8" x="-12" y="40" fill="#ebedf0" data-count="0" data-date="2018-05-03"></rect>
-          <rect class="day" width="8" height="8" x="-12" y="50" fill="#ebedf0" data-count="0" data-date="2018-05-04"></rect>
-          <rect class="day" width="8" height="8" x="-12" y="60" fill="#ebedf0" data-count="0" data-date="2018-05-05"></rect>
+          <rect class="day" width="8" height="8" x="-12" y="50" fill="#c6e48b" data-count="8" data-date="2018-05-04"></rect>
+          <rect class="day" width="8" height="8" x="-12" y="60" fill="#c6e48b" data-count="1" data-date="2018-05-05"></rect>
       </g>
       <g transform="translate(264, 0)">
           <rect class="day" width="8" height="8" x="-13" y="0" fill="#ebedf0" data-count="0" data-date="2018-05-06"></rect>
@@ -482,8 +494,8 @@ var _ = Describe("Client", func() {
           <rect class="day" width="8" height="8" x="-40" y="60" fill="#ebedf0" data-count="0" data-date="2018-11-17"></rect>
       </g>
       <g transform="translate(572, 0)">
-          <rect class="day" width="8" height="8" x="-41" y="0" fill="#c6e48b" data-count="1" data-date="2018-11-18"></rect>
-          <rect class="day" width="8" height="8" x="-41" y="10" fill="#c6e48b" data-count="7" data-date="2018-11-19"></rect>
+          <rect class="day" width="8" height="8" x="-41" y="0" fill="#c6e48b" data-count="2" data-date="2018-11-18"></rect>
+          <rect class="day" width="8" height="8" x="-41" y="10" fill="#c6e48b" data-count="6" data-date="2018-11-19"></rect>
           <rect class="day" width="8" height="8" x="-41" y="20" fill="#c6e48b" data-count="9" data-date="2018-11-20"></rect>
       </g>
       <text x="11" y="-8" class="month">Nov</text>
@@ -511,8 +523,6 @@ var _ = Describe("Client", func() {
 
 	var client *gitcon.Client
 	BeforeEach(func() {
-		httpmock.Activate()
-		defer httpmock.DeactivateAndReset()
 		httpmock.RegisterResponder("GET", "https://github.com/users/hiko1129/contributions", httpmock.NewStringResponder(200, dom))
 
 		client, _ = gitcon.New("hiko1129")
