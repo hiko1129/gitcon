@@ -19,7 +19,7 @@ jobs:
       - run:
           name: lint
           command: |
-            golint ./...
+            go list ./... | xargs -L1 golint -set_exit_status
             go vet ./...
 
       - run:
