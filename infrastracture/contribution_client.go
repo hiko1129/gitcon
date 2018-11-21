@@ -11,6 +11,8 @@ import (
 
 // ContirubutionClient struct
 type ContirubutionClient struct {
+	username      string
+	contributions map[string]int
 }
 
 // NewContirubutionClient func
@@ -24,6 +26,10 @@ const (
 
 // FetchContributions func
 func (c *ContirubutionClient) FetchContributions(username string) (map[string]int, error) {
+	if c.hasMemo(username) {
+		return c.getContributionsCache(), nil
+	}
+
 	result := map[string]int{}
 	res, err := http.Get(userEndpoint + username + "/contributions")
 	if err != nil {
@@ -59,5 +65,19 @@ func (c *ContirubutionClient) FetchContributions(username string) (map[string]in
 		}
 	})
 
+	c.setMemo(username, contributions)
 	return contributions, nil
+}
+
+func (c *ContirubutionClient) hasMemo(username string) bool {
+	return c.username == username && len(c.contributions) != 0
+}
+
+func (c *ContirubutionClient) setMemo(username string, contributions map[string]int) {
+	c.username = username
+	c.contributions = contributions
+}
+
+func (c *ContirubutionClient) getContributionsCache() map[string]int {
+	return c.contributions
 }
