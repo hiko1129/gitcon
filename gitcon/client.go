@@ -3,7 +3,7 @@ package gitcon
 import (
 	"time"
 
-	"github.com/hiko1129/gitcon/infrastracture"
+	"github.com/hiko1129/gitcon/adapter/gateway"
 	"github.com/hiko1129/gitcon/usecase"
 )
 
@@ -20,7 +20,7 @@ func New(username string) (*Client, error) {
 // FetchTodayContributionCount func
 func (c *Client) FetchTodayContributionCount() (int, error) {
 	req := &usecase.FetchTodayContributionCountRequest{Username: c.username}
-	client, err := infrastracture.NewContirubutionClient()
+	client, err := gateway.NewContirubutionClient()
 	if err != nil {
 		return 0, err
 	}
@@ -39,7 +39,7 @@ func (c *Client) FetchTodayContributionCount() (int, error) {
 // FetchContributionCount func
 func (c *Client) FetchContributionCount(datetime time.Time) (int, error) {
 	req := &usecase.FetchContributionCountRequest{Username: c.username}
-	client, err := infrastracture.NewContirubutionClient()
+	client, err := gateway.NewContirubutionClient()
 	if err != nil {
 		return 0, err
 	}
@@ -59,7 +59,7 @@ func (c *Client) FetchContributionCount(datetime time.Time) (int, error) {
 func (c *Client) FetchContributions() (map[string]int, error) {
 	result := map[string]int{}
 	req := &usecase.FetchContributionsRequest{Username: c.username}
-	client, err := infrastracture.NewContirubutionClient()
+	client, err := gateway.NewContirubutionClient()
 	if err != nil {
 		return result, err
 	}
@@ -78,7 +78,7 @@ func (c *Client) FetchContributions() (map[string]int, error) {
 // FetchTotalContributionCount func
 func (c *Client) FetchTotalContributionCount() (int, error) {
 	req := &usecase.FetchTotalContributionCountRequest{Username: c.username}
-	client, err := infrastracture.NewContirubutionClient()
+	client, err := gateway.NewContirubutionClient()
 	if err != nil {
 		return 0, err
 	}

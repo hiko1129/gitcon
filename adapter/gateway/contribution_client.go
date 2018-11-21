@@ -1,4 +1,4 @@
-package infrastracture
+package gateway
 
 import (
 	"fmt"
@@ -9,10 +9,11 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+type contributionsPerUser map[string]map[string]int
+
 // ContirubutionClient struct
 type ContirubutionClient struct {
-	username      string
-	contributions map[string]int
+	contributions contributionsPerUser
 }
 
 // NewContirubutionClient func
@@ -27,7 +28,7 @@ const (
 // FetchContributions func
 func (c *ContirubutionClient) FetchContributions(username string) (map[string]int, error) {
 	if c.hasMemo(username) {
-		return c.getContributionsCache(), nil
+		return c.getContributionsCache(username), nil
 	}
 
 	result := map[string]int{}
@@ -70,14 +71,18 @@ func (c *ContirubutionClient) FetchContributions(username string) (map[string]in
 }
 
 func (c *ContirubutionClient) hasMemo(username string) bool {
-	return c.username == username && len(c.contributions) != 0
+	_, ok := c.contributions[username]
+	return ok
 }
 
 func (c *ContirubutionClient) setMemo(username string, contributions map[string]int) {
-	c.username = username
-	c.contributions = contributions
+	if c.contributions == nil {
+		c.contributions = contributionsPerUser{username: contributions}
+		return
+	}
+	c.contributions[username] = contributions
 }
 
-func (c *ContirubutionClient) getContributionsCache() map[string]int {
-	return c.contributions
+func (c *ContirubutionClient) getContributionsCache(username string) map[string]int {
+	return c.contributions[username]
 }
