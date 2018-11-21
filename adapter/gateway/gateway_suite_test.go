@@ -1,4 +1,4 @@
-package infrastracture_test
+package gateway_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestInfrastracture(t *testing.T) {
+func TestGateway(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Infrastracture Suite")
+	RunSpecs(t, "Gateway Suite")
 }

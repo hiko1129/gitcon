@@ -1,29 +1,21 @@
-package gitcon_test
+package gateway_test
 
 import (
-	"time"
-
 	"github.com/jarcoal/httpmock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/hiko1129/gitcon/gitcon"
+	"github.com/hiko1129/gitcon/adapter/gateway"
 )
 
-var _ = BeforeSuite(func() {
-	httpmock.Activate()
-})
+var _ = Describe("ContributionClient", func() {
+	var client *gateway.ContirubutionClient
+	BeforeEach(func() {
+		client, _ = gateway.NewContirubutionClient()
+	})
 
-var _ = BeforeEach(func() {
-	httpmock.Reset()
-})
-
-var _ = AfterSuite(func() {
-	httpmock.DeactivateAndReset()
-})
-
-var _ = Describe("Client", func() {
-	html := `<svg width="563" height="88" class="js-calendar-graph-svg">
+	Describe("#FetchContributions", func() {
+		html := `<svg width="563" height="88" class="js-calendar-graph-svg">
   <g transform="translate(16, 20)">
       <g transform="translate(0, 0)">
           <rect class="day" width="8" height="8" x="11" y="0" fill="#7bc96f" data-count="13" data-date="2017-11-19"></rect>
@@ -521,39 +513,65 @@ var _ = Describe("Client", func() {
   </g>
 </svg>`
 
-	var client *gitcon.Client
-	BeforeEach(func() {
-		httpmock.RegisterResponder("GET", "https://github.com/users/hiko1129/contributions", httpmock.NewStringResponder(200, html))
+		Context("when real endpoint", func() {
+			Context("when valid username", func() {
+				It("expects no error", func() {
+					// confirmation real endpoint
+					contributions, err := client.FetchContributions("hiko1129")
+					Expect(contributions).NotTo(BeEmpty())
+					Expect(err).NotTo(HaveOccurred())
+				})
+			})
 
-		client, _ = gitcon.New("hiko1129")
-	})
+			// Context("when invalid username", func() {
+			// 	It("expects error", func() {
+			// 		httpmock.Activate()
+			// 		defer httpmock.DeactivateAndReset()
+			// 		httpmock.RegisterResponder("GET", "https://github.com/users/hiko1129/contributions", httpmock.NewStringResponder(200, html))
 
-	Describe("#FetchContributions", func() {
-		It("should not error", func() {
-			contributions, err := client.FetchContributions()
-			Expect(contributions).NotTo(BeEmpty())
-			Expect(err).NotTo(HaveOccurred())
+			// 		contributions, err := client.FetchContributions("-01-01-01-")
+			// 		Expect(contributions).To(BeEmpty())
+			// 		Expect(err).To(HaveOccurred())
+			// 	})
+			// })
 		})
-	})
 
-	Describe("#FetchTotalContributionCount", func() {
-		It("should not error", func() {
-			count, err := client.FetchTotalContributionCount()
-			Expect(count).To(Equal(2563))
-			Expect(err).NotTo(HaveOccurred())
-		})
-	})
+		Context("when fake endpoint", func() {
+			BeforeEach(func() {
+				httpmock.Activate()
+			})
 
-	Describe("#FetchContributionCount", func() {
-		It("should not error", func() {
-			loc, _ := time.LoadLocation("Asia/Tokyo")
-			count, err := client.FetchContributionCount(time.Date(2018, 11, 20, 0, 0, 0, 0, loc))
-			Expect(count).To(Equal(9))
-			Expect(err).NotTo(HaveOccurred())
+			AfterEach(func() {
+				httpmock.DeactivateAndReset()
+			})
 
-			count, err = client.FetchContributionCount(time.Date(2018, 11, 12, 0, 0, 0, 0, loc))
-			Expect(count).To(Equal(1))
-			Expect(err).NotTo(HaveOccurred())
+			Context("when valid username", func() {
+				It("expects no error", func() {
+					httpmock.RegisterResponder("GET", "https://github.com/users/hiko1129/contributions", httpmock.NewStringResponder(200, html))
+					contributions, err := client.FetchContributions("hiko1129")
+					Expect(contributions).NotTo(BeEmpty())
+					Expect(err).NotTo(HaveOccurred())
+
+					contributions, err = client.FetchContributions("hiko1129")
+					Expect(contributions).NotTo(BeEmpty())
+					Expect(err).NotTo(HaveOccurred())
+				})
+			})
+
+			Context("when invalid username", func() {
+				It("expects 404 error", func() {
+					httpmock.RegisterResponder("GET", "https://github.com/users/abcdefghijklmn/contributions", httpmock.NewStringResponder(404, "not found"))
+					contributions, err := client.FetchContributions("abcdefghijklmn")
+					Expect(contributions).To(BeEmpty())
+					Expect(err.Error()).To(ContainSubstring("status code error: 404"))
+				})
+
+				It("expects error", func() {
+					contributions, err := client.FetchContributions("abcdefghijklmn")
+					Expect(contributions).To(BeEmpty())
+					Expect(err.Error()).To(ContainSubstring("no responder found"))
+				})
+			})
 		})
 	})
 })
