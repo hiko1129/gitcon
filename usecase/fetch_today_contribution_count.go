@@ -24,17 +24,14 @@ type FetchTodayContributionCount struct {
 }
 
 // NewFetchTodayContributionCount func
-func NewFetchTodayContributionCount(request *FetchTodayContributionCountRequest, client client.Contribution) (*FetchTodayContributionCount, error) {
-	return &FetchTodayContributionCount{request: request, client: client}, nil
+func NewFetchTodayContributionCount(request *FetchTodayContributionCountRequest, client client.Contribution) *FetchTodayContributionCount {
+	return &FetchTodayContributionCount{request: request, client: client}
 }
 
 // Exec func
 func (f *FetchTodayContributionCount) Exec() (*FetchTodayContributionCountResponse, error) {
 	fe := &FetchTodayContributionCountResponse{}
-	u, err := NewFetchContributionCount(&FetchContributionCountRequest{Username: f.request.Username}, f.client, time.Now())
-	if err != nil {
-		return fe, err
-	}
+	u := NewFetchContributionCount(&FetchContributionCountRequest{Username: f.request.Username}, f.client, time.Now())
 	res, err := u.Exec()
 	if err != nil {
 		return fe, errors.Wrap(err, "fetch today contribution failed")

@@ -1,6 +1,7 @@
 package gateway_test
 
 import (
+	"github.com/hiko1129/gitcon/infrastructure"
 	"github.com/jarcoal/httpmock"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -8,10 +9,13 @@ import (
 	"github.com/hiko1129/gitcon/adapter/gateway"
 )
 
+// TODO remove httpmock
+
 var _ = Describe("ContributionClient", func() {
 	var client *gateway.ContirubutionClient
 	BeforeEach(func() {
-		client, _ = gateway.NewContirubutionClient()
+		http := infrastructure.NewHTTP()
+		client = gateway.NewContirubutionClient(http)
 	})
 
 	Describe("#FetchContributions", func() {
