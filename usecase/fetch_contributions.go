@@ -22,8 +22,8 @@ type FetchContributions struct {
 }
 
 // NewFetchContributions func
-func NewFetchContributions(request *FetchContributionsRequest, client client.Contribution) (*FetchContributions, error) {
-	return &FetchContributions{request: request, client: client}, nil
+func NewFetchContributions(request *FetchContributionsRequest, client client.Contribution) *FetchContributions {
+	return &FetchContributions{request: request, client: client}
 }
 
 // Exec func

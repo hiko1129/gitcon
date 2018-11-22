@@ -1,5 +1,16 @@
-package infrastracture
+package infrastructure
 
-// TODO
-// don't use httpmock
-// define a function that returns a http.Response
+import "net/http"
+
+// HTTP struct
+type HTTP struct{}
+
+// NewHTTP func
+func NewHTTP() *HTTP {
+	return &HTTP{}
+}
+
+// Get func
+func (h *HTTP) Get(url string) (*http.Response, error) {
+	return http.Get(url)
+}

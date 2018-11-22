@@ -3,7 +3,6 @@ package gateway
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"strconv"
 
 	"github.com/PuerkitoBio/goquery"
@@ -13,12 +12,13 @@ type contributionsPerUser map[string]map[string]int
 
 // ContirubutionClient struct
 type ContirubutionClient struct {
+	http          HTTP
 	contributions contributionsPerUser
 }
 
 // NewContirubutionClient func
-func NewContirubutionClient() (*ContirubutionClient, error) {
-	return &ContirubutionClient{}, nil
+func NewContirubutionClient(http HTTP) *ContirubutionClient {
+	return &ContirubutionClient{http: http}
 }
 
 const (
@@ -32,7 +32,7 @@ func (c *ContirubutionClient) FetchContributions(username string) (map[string]in
 	}
 
 	result := map[string]int{}
-	res, err := http.Get(userEndpoint + username + "/contributions")
+	res, err := c.http.Get(userEndpoint + username + "/contributions")
 	if err != nil {
 		return result, err
 	}

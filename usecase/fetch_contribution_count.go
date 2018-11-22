@@ -25,8 +25,8 @@ type FetchContributionCount struct {
 }
 
 // NewFetchContributionCount func
-func NewFetchContributionCount(request *FetchContributionCountRequest, client client.Contribution, datetime time.Time) (*FetchContributionCount, error) {
-	return &FetchContributionCount{request: request, client: client, datetime: datetime}, nil
+func NewFetchContributionCount(request *FetchContributionCountRequest, client client.Contribution, datetime time.Time) *FetchContributionCount {
+	return &FetchContributionCount{request: request, client: client, datetime: datetime}
 }
 
 // Exec func
