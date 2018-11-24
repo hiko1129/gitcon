@@ -529,7 +529,7 @@ var _ = Describe("Client", func() {
 	})
 
 	Describe("#FetchContributions", func() {
-		It("should not error", func() {
+		It("expects no error", func() {
 			contributions, err := client.FetchContributions()
 			Expect(contributions).NotTo(BeEmpty())
 			Expect(err).NotTo(HaveOccurred())
@@ -537,7 +537,7 @@ var _ = Describe("Client", func() {
 	})
 
 	Describe("#FetchTotalContributionCount", func() {
-		It("should not error", func() {
+		It("expects no error", func() {
 			count, err := client.FetchTotalContributionCount()
 			Expect(count).To(Equal(2563))
 			Expect(err).NotTo(HaveOccurred())
@@ -545,7 +545,7 @@ var _ = Describe("Client", func() {
 	})
 
 	Describe("#FetchContributionCount", func() {
-		It("should not error", func() {
+		It("expects no error", func() {
 			loc, _ := time.LoadLocation("Asia/Tokyo")
 			count, err := client.FetchContributionCount(time.Date(2018, 11, 20, 0, 0, 0, 0, loc))
 			Expect(count).To(Equal(9))

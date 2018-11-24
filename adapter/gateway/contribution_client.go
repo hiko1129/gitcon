@@ -1,8 +1,9 @@
 package gateway
 
 import (
+	"errors"
 	"fmt"
-	"log"
+	"io"
 	"strconv"
 
 	"github.com/PuerkitoBio/goquery"
@@ -41,32 +42,39 @@ func (c *ContirubutionClient) FetchContributions(username string) (map[string]in
 		return result, fmt.Errorf("status code error: %d %s", res.StatusCode, res.Status)
 	}
 
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		return result, err
-	}
-
-	contributions := map[string]int{}
-	doc.Find(".js-calendar-graph-svg").Find("g").Children().Each(func(i int, s *goquery.Selection) {
-		if s.Find("g") != nil {
-			s.Children().Each(func(i int, s *goquery.Selection) {
-				count, ok := s.Attr("data-count")
-				if !ok {
-					log.Fatal("data-count attribute does not exsist")
-				}
-				date, ok := s.Attr("data-date")
-				if !ok {
-					log.Fatal("data-date attribute does not exsist")
-				}
-				c, _ := strconv.Atoi(count)
-				contributions[date] = c
-			})
-		} else {
-			log.Fatal("maybe web page changed")
-		}
-	})
+	contributions, err := c.extractContributions(res.Body)
 
 	c.setMemo(username, contributions)
+	return contributions, nil
+}
+
+func (c *ContirubutionClient) extractContributions(body io.ReadCloser) (map[string]int, error) {
+	contributions := map[string]int{}
+
+	doc, err := goquery.NewDocumentFromReader(body)
+	if err != nil {
+		return contributions, err
+	}
+
+	doc.Find(".js-calendar-graph-svg").Find("g").Children().Each(func(i int, s *goquery.Selection) {
+		s.Children().Each(func(i int, s *goquery.Selection) {
+			count, ok := s.Attr("data-count")
+			if !ok {
+				err = errors.New("data-count attribute does not exsist")
+			}
+			date, ok := s.Attr("data-date")
+			if !ok {
+				err = errors.New("data-date attribute does not exsist")
+			}
+			c, _ := strconv.Atoi(count)
+			contributions[date] = c
+		})
+	})
+
+	if err != nil {
+		return contributions, err
+	}
+
 	return contributions, nil
 }
 
